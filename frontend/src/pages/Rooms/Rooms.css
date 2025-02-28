@@ -1,0 +1,11 @@
+#page-container {
+  all: unset !important;
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+  padding: 0;
+  margin: 0;
+}
+
+#sidebar {
+  display: none !important;
+}
