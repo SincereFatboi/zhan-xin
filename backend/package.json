@@ -35,7 +35,7 @@
     "tonal": "^6.4.2"
   },
   "devDependencies": {
-    "@prisma/client": "^6.16.2",
+    "@prisma/client": "^7.3.0",
     "nodemon": "^3.1.10",
     "prisma": "^6.16.2"
   }
