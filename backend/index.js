@@ -33,11 +33,12 @@ app.use(cookieParser());
 const prisma = new PrismaClient();
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/scores", verifyJWT, scoresRoutes);
-app.use("/api/rooms", verifyJWT, roomRoutes);
+app.use("/api/auth", credentials, authRoutes);
+app.use("/api/scores", credentials, verifyJWT, scoresRoutes);
+app.use("/api/rooms", credentials, verifyJWT, roomRoutes);
 app.use(
   "/api/users",
+  credentials,
   verifyJWT,
   verifyRole([RoleType.SUPER_ADMIN]),
   userRoutes,

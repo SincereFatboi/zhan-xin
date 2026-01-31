@@ -2,7 +2,8 @@ import allowedOrigins from "../config/allowedOrigins.js";
 
 export const credentials = (req, res, next) => {
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
+  const isPreview = /^https:\/\/zhan-xin-.*\.vercel\.app$/i.test(origin || "");
+  if (allowedOrigins.includes(origin) || isPreview) {
     res.header("Access-Control-Allow-Origin", origin);
     res.header("Access-Control-Allow-Credentials", "true");
     res.header(
