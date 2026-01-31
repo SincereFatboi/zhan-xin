@@ -1,3 +1,7 @@
-const allowedOrigins = ["https://zhan-xin.vercel.app"];
+const allowedOrigins = [
+  "https://zhan-xin.vercel.app",
+  "http://192.168.1.111:5173",
+  "http://localhost:5173",
+];
 
 export default allowedOrigins;
