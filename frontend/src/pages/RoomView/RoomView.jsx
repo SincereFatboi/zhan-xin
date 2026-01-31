@@ -176,6 +176,7 @@ const RoomView = () => {
 
   const handleNextScore = () => {
     if (!socket || !allScores) return;
+    suppressTransposeNotifyRef.current = true;
     let nextIndex = 0;
     setScoreIndex((prev) => {
       const lastIndex = Object.keys(allScores).length - 1;
@@ -194,6 +195,7 @@ const RoomView = () => {
 
   const handlePrevScore = () => {
     if (!socket || !allScores) return;
+    suppressTransposeNotifyRef.current = true;
     let prevIndex = 0;
     setScoreIndex((prev) => {
       const lastIndex = Object.keys(allScores).length - 1;
