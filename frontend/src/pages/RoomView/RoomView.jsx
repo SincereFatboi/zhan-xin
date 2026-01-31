@@ -28,6 +28,7 @@ const RoomView = () => {
   const applyingRemoteScrollRef = useRef(false);
   const lastRemoteRatioRef = useRef(0);
   const lastSentRef = useRef(0);
+  const resumeFollowTimeoutRef = useRef(null);
   const prevTransposeRef = useRef(null);
   const suppressTransposeNotifyRef = useRef(false);
   const didMountRef = useRef(false);
@@ -356,6 +357,16 @@ const RoomView = () => {
         if (roomName) setBoolCookie(`roomFollow_${roomName}`, false);
       }
 
+      // Reset auto-resume timer
+      if (resumeFollowTimeoutRef.current) {
+        clearTimeout(resumeFollowTimeoutRef.current);
+      }
+      resumeFollowTimeoutRef.current = setTimeout(() => {
+        setFollowScroll(true);
+        if (roomName) setBoolCookie(`roomFollow_${roomName}`, true);
+        applyScrollRatio(lastRemoteRatioRef.current || 0);
+      }, 500); // resume following after 0.5s of inactivity
+
       const now = Date.now();
       if (now - lastSentRef.current < 1) return; // throttle ~100fps
       lastSentRef.current = now;
@@ -367,7 +378,13 @@ const RoomView = () => {
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      if (resumeFollowTimeoutRef.current) {
+        clearTimeout(resumeFollowTimeoutRef.current);
+        resumeFollowTimeoutRef.current = null;
+      }
+    };
   }, [socket, roomName, renderedHtml, followScroll]);
 
   useEffect(() => {
