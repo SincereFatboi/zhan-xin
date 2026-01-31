@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
@@ -19,6 +20,7 @@ const SignIn = ({ handlesignInSignUp }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const notify = useNotify();
+  const [isLoading, setIsLoading] = useState(false);
   const [signIn, signInStatus] = useSignInMutation();
 
   const { register, handleSubmit, formState } = useForm({
@@ -29,6 +31,7 @@ const SignIn = ({ handlesignInSignUp }) => {
 
   const onSubmit = async ({ username, password }) => {
     try {
+      setIsLoading(true);
       const credentials = await signIn({ username, password }).unwrap();
       notify("success", "Sign in successful");
       dispatch(
@@ -50,6 +53,7 @@ const SignIn = ({ handlesignInSignUp }) => {
         notify("error", "Unknown error occurred");
       }
     }
+    setIsLoading(false);
   };
   return (
     <>
