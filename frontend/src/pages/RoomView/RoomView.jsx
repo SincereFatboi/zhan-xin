@@ -352,7 +352,7 @@ const RoomView = () => {
       if (applyingRemoteScrollRef.current) return;
 
       const now = Date.now();
-      if (now - lastSentRef.current < 10) return; // throttle ~50fps
+      // if (now - lastSentRef.current < 10) return; // throttle ~50fps
       lastSentRef.current = now;
 
       const max = el.scrollHeight - el.clientHeight;
