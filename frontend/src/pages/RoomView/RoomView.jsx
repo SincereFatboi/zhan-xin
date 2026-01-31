@@ -367,7 +367,7 @@ const RoomView = () => {
         setFollowScroll(true);
         if (roomName) setBoolCookie(`roomFollow_${roomName}`, true);
         applyScrollRatio(lastRemoteRatioRef.current || 0);
-      }, 500); // resume following after 0.5s of inactivity
+      }, 1); // resume following after 0.5s of inactivity
 
       const now = Date.now();
       if (now - lastSentRef.current < 1) return; // throttle ~100fps
