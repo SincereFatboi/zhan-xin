@@ -263,15 +263,8 @@ const RoomView = () => {
   }, [roomName]);
 
   useEffect(() => {
-    const socketUrl =
-      import.meta.env.VITE_SOCKET_URL ||
-      import.meta.env.VITE_API_URL ||
-      "https://zhan-xin-backend.vercel.app";
-
-    const newSocket = io(socketUrl, {
+    const newSocket = io(`${import.meta.env.VITE_IP_ADDRESS}:5000`, {
       auth: { token: accessToken },
-      transports: ["websocket", "polling"],
-      withCredentials: true,
     });
 
     newSocket.on("connect_error", (err) => {
