@@ -13,6 +13,7 @@ import TextField from "@mui/material/TextField";
 import { useNotify } from "../../hooks/useNotify";
 import { useSignInMutation } from "../../redux/apis/auth/signInAPI";
 import { setCredentials } from "../../redux/slices/authSlice";
+import Loading from "../Loading/Loading.jsx";
 import "./SignIn.css";
 import { schema } from "./helpers";
 
@@ -57,6 +58,7 @@ const SignIn = ({ handlesignInSignUp }) => {
   };
   return (
     <>
+      {isLoading && <Loading />}
       <Stack
         spacing={3}
         sx={{ mb: 2, width: "80%" }}

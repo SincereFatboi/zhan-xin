@@ -23,12 +23,14 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import styled from "@mui/material/styles/styled";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { set } from "mongoose";
 
 import topography from "../../assets/topography.svg";
 import { useNotify } from "../../hooks/useNotify";
 import { useLazySignOutQuery } from "../../redux/apis/auth/signOutAPI";
 import { baseAPI } from "../../redux/apis/baseAPI";
 import { setSignOut } from "../../redux/slices/authSlice";
+import Loading from "../Loading/Loading";
 import ListItems from "./ListItems";
 
 const drawerWidth = "160px";
@@ -95,6 +97,7 @@ const sections = [
 const Header = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [signOut, signOutStatus] = useLazySignOutQuery();
@@ -121,6 +124,7 @@ const Header = () => {
   });
 
   const handleSignOut = async () => {
+    setIsLoading(true);
     try {
       await signOut().unwrap();
       dispatch(setSignOut());
@@ -136,6 +140,7 @@ const Header = () => {
         notify("error", "Sign out failed");
       }
     }
+    setIsLoading(false);
   };
 
   const isValidRoomPath =
@@ -144,6 +149,7 @@ const Header = () => {
 
   return (
     <Box sx={{ display: "flex" }}>
+      {isLoading && <Loading />}
       {!isValidRoomPath && (
         <>
           <AppBar position="absolute" open={open}>
