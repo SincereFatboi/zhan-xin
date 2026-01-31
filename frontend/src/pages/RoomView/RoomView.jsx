@@ -348,11 +348,16 @@ const RoomView = () => {
     if (!el || !socket || !roomName) return;
 
     const onScroll = () => {
-      if (!followScroll) return;
       if (applyingRemoteScrollRef.current) return;
 
+      // If you start scrolling while following, you take control (stop following) and become the leader
+      if (followScroll) {
+        setFollowScroll(false);
+        if (roomName) setBoolCookie(`roomFollow_${roomName}`, false);
+      }
+
       const now = Date.now();
-      // if (now - lastSentRef.current < 10) return; // throttle ~50fps
+      if (now - lastSentRef.current < 1) return; // throttle ~100fps
       lastSentRef.current = now;
 
       const max = el.scrollHeight - el.clientHeight;
@@ -397,7 +402,7 @@ const RoomView = () => {
       const targetTop = max > 0 ? clamped * max : 0;
 
       // avoid micro-updates that cause jitter
-      // if (Math.abs(el.scrollTop - targetTop) < 2) return;
+      // if (Math.abs(el.scrollTop - targetTop) < 20) return;
 
       applyingRemoteScrollRef.current = true;
       el.scrollTop = targetTop;
