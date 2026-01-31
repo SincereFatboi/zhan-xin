@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router";
 
-import { useLazyGetRefreshTokenQuery } from "../../redux/apis/auth/RefreshTokenAPI";
+import { useLazyGetRefreshTokenQuery } from "../../redux/apis/auth/refreshTokenAPI";
 import { setCredentials } from "../../redux/slices/authSlice";
 import Loading from "../Loading/Loading";
 
