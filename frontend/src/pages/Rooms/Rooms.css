@@ -1,0 +1,15 @@
+#page-container {
+  all: unset !important;
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+#sidebar {
+  display: none !important;
+}
+
+.pf {
+  box-shadow: none !important;
+}
