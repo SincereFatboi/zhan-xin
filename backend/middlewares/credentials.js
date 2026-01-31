@@ -9,12 +9,9 @@ export const credentials = (req, res, next) => {
       "Access-Control-Allow-Methods",
       "GET,POST,PUT,PATCH,DELETE,OPTIONS",
     );
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Accept, Content-Type, Authorization, X-Requested-With",
-    );
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
     if (req.method === "OPTIONS") {
-      return res.status(200).json({ message: "Preflight OK" });
+      return res.status(200).end();
     }
   }
   next();

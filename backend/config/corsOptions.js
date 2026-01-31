@@ -2,7 +2,7 @@ import allowedOrigins from "./allowedOrigins.js";
 
 const corsOptions = {
   origin: (origin, callback) => {
-  allowedHeaders: ["Accept", "Content-Type", "Authorization", "X-Requested-With"],
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
