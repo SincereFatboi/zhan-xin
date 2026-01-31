@@ -61,6 +61,7 @@ app.use((err, req, res, next) => {
     .json({ message: err.message || "An unknown error occured" });
 });
 
-server.listen(5000);
+const port = process.env.PORT || 5000;
+server.listen(port);
 
 console.log("🚀 ~ Server started!");
