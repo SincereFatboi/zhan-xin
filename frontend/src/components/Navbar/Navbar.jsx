@@ -23,7 +23,6 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import styled from "@mui/material/styles/styled";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { set } from "mongoose";
 
 import topography from "../../assets/topography.svg";
 import { useNotify } from "../../hooks/useNotify";
