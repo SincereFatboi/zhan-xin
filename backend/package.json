@@ -1,0 +1,41 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "dev": "nodemon main.js",
+    "prisma:g": "npx prisma generate",
+    "prisma:m": "npx prisma migrate dev",
+    "prisma:m-c": "npx prisma migrate dev --create-only",
+    "prisma:deploy": "npx prisma migrate deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.964.0",
+    "@aws-sdk/s3-request-presigner": "^3.964.0",
+    "bcrypt": "^6.0.0",
+    "cheerio": "^1.1.0",
+    "chord-transposer": "^3.0.9",
+    "cloudconvert": "^3.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.15.2",
+    "socket.io": "^4.8.3",
+    "tonal": "^6.4.2"
+  },
+  "devDependencies": {
+    "@prisma/client": "^6.16.2",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.16.2"
+  }
+}
