@@ -23,6 +23,19 @@ const removeParticipant = (roomName, userId) => {
   }
 };
 
+export const cleanupUserSessions = (userId) => {
+  if (!userId) return;
+  allUsers.delete(userId);
+  for (const [roomName, set] of roomParticipants.entries()) {
+    if (set.has(userId)) {
+      set.delete(userId);
+      if (set.size === 0) {
+        roomParticipants.delete(roomName);
+      }
+    }
+  }
+};
+
 export const getRoomOccupancy = (roomName) => {
   if (!roomName) return 0;
   return roomParticipants.get(roomName)?.size ?? 0;

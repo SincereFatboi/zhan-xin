@@ -176,7 +176,6 @@ const RoomView = () => {
 
   const handleNextScore = () => {
     if (!socket || !allScores) return;
-    suppressTransposeNotifyRef.current = true;
     let nextIndex = 0;
     setScoreIndex((prev) => {
       const lastIndex = Object.keys(allScores).length - 1;
@@ -195,7 +194,6 @@ const RoomView = () => {
 
   const handlePrevScore = () => {
     if (!socket || !allScores) return;
-    suppressTransposeNotifyRef.current = true;
     let prevIndex = 0;
     setScoreIndex((prev) => {
       const lastIndex = Object.keys(allScores).length - 1;
@@ -367,10 +365,10 @@ const RoomView = () => {
         setFollowScroll(true);
         if (roomName) setBoolCookie(`roomFollow_${roomName}`, true);
         applyScrollRatio(lastRemoteRatioRef.current || 0);
-      }, 1); // resume following after 0.5s of inactivity
+      }, 500); // resume following after 0.5s of inactivity
 
       const now = Date.now();
-      if (now - lastSentRef.current < 1) return; // throttle ~100fps
+      if (now - lastSentRef.current < 10) return; // throttle ~100fps
       lastSentRef.current = now;
 
       const max = el.scrollHeight - el.clientHeight;

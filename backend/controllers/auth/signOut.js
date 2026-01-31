@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { cleanupUserSessions } from "../../sockets/index.js";
 
 const prisma = new PrismaClient();
 
@@ -44,6 +45,9 @@ export const signOut = async (req, res) => {
         ),
       },
     });
+
+    // Disconnect user from all socket tracking maps
+    cleanupUserSessions(foundUser.id);
 
     res.clearCookie("jwt", {
       httpOnly: true,
