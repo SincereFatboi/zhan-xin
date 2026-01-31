@@ -263,7 +263,7 @@ const RoomView = () => {
   }, [roomName]);
 
   useEffect(() => {
-    const newSocket = io(`${import.meta.env.VITE_IP_ADDRESS}:5000`, {
+    const newSocket = io(`${import.meta.env.VITE_IP_ADDRESS}`, {
       auth: { token: accessToken },
     });
 
