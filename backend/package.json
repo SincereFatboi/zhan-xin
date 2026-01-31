@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "main.js",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon main.js",
+    "dev": "nodemon index.js",
     "prisma:g": "npx prisma generate",
     "prisma:m": "npx prisma migrate dev",
     "prisma:m-c": "npx prisma migrate dev --create-only",
