@@ -11,8 +11,8 @@ export const refreshToken = async (req, res) => {
   const refreshToken = cookies.jwt;
   res.clearCookie("jwt", {
     httpOnly: true,
-    sameSite: "None",
-    secure: true,
+    sameSite: "Lax",
+    secure: false,
   });
 
   try {
@@ -109,8 +109,8 @@ export const refreshToken = async (req, res) => {
 
       res.cookie("jwt", newRefreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: "None",
+        sameSite: "Lax",
+        secure: false,
         maxAge: 3 * 24 * 60 * 60 * 1000,
       });
 

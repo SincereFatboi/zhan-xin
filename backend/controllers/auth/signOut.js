@@ -9,8 +9,8 @@ export const signOut = async (req, res) => {
   if (!refreshToken) {
     res.clearCookie("jwt", {
       httpOnly: true,
-      sameSite: "None",
-      secure: true,
+      sameSite: "Lax",
+      secure: false,
     });
     return res.status(204).json({ message: "No content" });
   }
@@ -28,8 +28,8 @@ export const signOut = async (req, res) => {
     if (!foundUser) {
       res.clearCookie("jwt", {
         httpOnly: true,
-        sameSite: "None",
-        secure: true,
+        sameSite: "Lax",
+        secure: false,
       });
       return res.status(204).json({ message: "No content" });
     }
@@ -51,8 +51,8 @@ export const signOut = async (req, res) => {
 
     res.clearCookie("jwt", {
       httpOnly: true,
-      sameSite: "None",
-      secure: true,
+      sameSite: "Lax",
+      secure: false,
     });
 
     return res.status(200).json({ message: "Signed out" });

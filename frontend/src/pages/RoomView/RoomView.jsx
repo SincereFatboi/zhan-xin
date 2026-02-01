@@ -28,7 +28,6 @@ const RoomView = () => {
   const applyingRemoteScrollRef = useRef(false);
   const lastRemoteRatioRef = useRef(0);
   const lastSentRef = useRef(0);
-  const resumeFollowTimeoutRef = useRef(null);
   const prevTransposeRef = useRef(null);
   const suppressTransposeNotifyRef = useRef(false);
   const didMountRef = useRef(false);
@@ -349,26 +348,11 @@ const RoomView = () => {
     if (!el || !socket || !roomName) return;
 
     const onScroll = () => {
+      if (!followScroll) return;
       if (applyingRemoteScrollRef.current) return;
 
-      // If you start scrolling while following, you take control (stop following) and become the leader
-      if (followScroll) {
-        setFollowScroll(false);
-        if (roomName) setBoolCookie(`roomFollow_${roomName}`, false);
-      }
-
-      // Reset auto-resume timer
-      if (resumeFollowTimeoutRef.current) {
-        clearTimeout(resumeFollowTimeoutRef.current);
-      }
-      resumeFollowTimeoutRef.current = setTimeout(() => {
-        setFollowScroll(true);
-        if (roomName) setBoolCookie(`roomFollow_${roomName}`, true);
-        applyScrollRatio(lastRemoteRatioRef.current || 0);
-      }, 500); // resume following after 0.5s of inactivity
-
       const now = Date.now();
-      if (now - lastSentRef.current < 10) return; // throttle ~100fps
+      if (now - lastSentRef.current < 20) return; // throttle ~100fps
       lastSentRef.current = now;
 
       const max = el.scrollHeight - el.clientHeight;
@@ -378,13 +362,7 @@ const RoomView = () => {
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      el.removeEventListener("scroll", onScroll);
-      if (resumeFollowTimeoutRef.current) {
-        clearTimeout(resumeFollowTimeoutRef.current);
-        resumeFollowTimeoutRef.current = null;
-      }
-    };
+    return () => el.removeEventListener("scroll", onScroll);
   }, [socket, roomName, renderedHtml, followScroll]);
 
   useEffect(() => {
@@ -419,7 +397,7 @@ const RoomView = () => {
       const targetTop = max > 0 ? clamped * max : 0;
 
       // avoid micro-updates that cause jitter
-      // if (Math.abs(el.scrollTop - targetTop) < 20) return;
+      if (Math.abs(el.scrollTop - targetTop) < 20) return;
 
       applyingRemoteScrollRef.current = true;
       el.scrollTop = targetTop;

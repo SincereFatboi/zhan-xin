@@ -32,6 +32,10 @@ app.use(express.json());
 app.use(cookieParser());
 const prisma = new PrismaClient();
 
+app.get("/", (req, res) => {
+  return res.status(200).json({ message: "展心 is working!" });
+});
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/scores", verifyJWT, scoresRoutes);
@@ -64,4 +68,4 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 5000;
 server.listen(port);
 
-console.log("🚀 ~ Server started!");
+console.log(`🚀 ~ Server is running on port ${port}!`);
