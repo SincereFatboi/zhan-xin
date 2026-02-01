@@ -29,6 +29,7 @@ const RoomView = () => {
   const lastRemoteRatioRef = useRef(0);
   const lastSentRef = useRef(0);
   const prevTransposeRef = useRef(null);
+  const prevScoreIndexRef = useRef(0);
   const suppressTransposeNotifyRef = useRef(false);
   const didMountRef = useRef(false);
   const skippedFirstTransposeRef = useRef(false);
@@ -148,14 +149,17 @@ const RoomView = () => {
   };
 
   useEffect(() => {
+    const prevScoreIdx = prevScoreIndexRef.current;
+
     if (!didMountRef.current) {
       didMountRef.current = true;
+      prevScoreIndexRef.current = scoreIndex;
       prevTransposeRef.current = transposeKey;
       return;
     }
 
-    if (suppressTransposeNotifyRef.current) {
-      suppressTransposeNotifyRef.current = false;
+    if (prevScoreIdx !== scoreIndex) {
+      prevScoreIndexRef.current = scoreIndex;
       prevTransposeRef.current = transposeKey;
       return;
     }
@@ -171,7 +175,7 @@ const RoomView = () => {
       notify("info", dir);
       prevTransposeRef.current = transposeKey;
     }
-  }, [transposeKey, notify]);
+  }, [transposeKey, scoreIndex, notify]);
 
   const handleNextScore = () => {
     if (!socket || !allScores) return;
