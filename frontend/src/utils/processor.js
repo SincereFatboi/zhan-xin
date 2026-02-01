@@ -334,25 +334,23 @@ export const parseHtmlFile = (doc, changeKey) => {
       }
     }
 
-    // Manage partials, slashes, formatting, and transposition in one walk
+    // Manage partials
     depth.each((_, element) => {
-      const current = $(element);
-      const prev = current.prev();
-
-      // Manage partials
       if (
-        splitChords(toText(extractNodes(prev))).length > 0 &&
-        chordValidator(splitChords(toText(extractNodes(prev))).at(-1)) &&
-        directionalSearch(extractNodes(current), allPartials)?.metConds &&
-        checkYCoor(current)
+        splitChords(toText(extractNodes($(element).prev()))).length > 0 &&
+        chordValidator(
+          splitChords(toText(extractNodes($(element).prev()))).at(-1),
+        ) &&
+        directionalSearch(extractNodes($(element)), allPartials)?.metConds &&
+        checkYCoor($(element))
       ) {
         const allPartialsPos = directionalSearch(
-          extractNodes(current),
+          extractNodes($(element)),
           allPartials,
         );
         const validChordPos = directionalSearch(
-          extractNodes(prev),
-          [`${splitChords(toText(extractNodes(prev))).at(-1)}`],
+          extractNodes($(element).prev()),
+          [`${splitChords(toText(extractNodes($(element).prev()))).at(-1)}`],
           "reverse",
         );
 
@@ -363,10 +361,10 @@ export const parseHtmlFile = (doc, changeKey) => {
         ) {
           allPartialsPos.chars.forEach((char) => {
             replaceNode(
-              current,
+              $(element),
               char.index,
               modifyString(
-                extractNodes(current)[char.index],
+                extractNodes($(element))[char.index],
                 char.position,
                 "\u2800",
                 "replace",
@@ -375,44 +373,48 @@ export const parseHtmlFile = (doc, changeKey) => {
           });
 
           replaceNode(
-            prev,
+            $(element).prev(),
             validChordPos.chars.at(-1).index,
             modifyString(
-              extractNodes(prev)[validChordPos.chars.at(-1).index],
+              extractNodes($(element).prev())[validChordPos.chars.at(-1).index],
               validChordPos.chars.at(-1).position,
               allPartialsPos.metConds,
               "insert",
             ),
           );
 
-          if (toText(extractNodes(current)).length === 0) {
-            current.remove();
-            return; // nothing more to do with removed element
+          if (toText(extractNodes($(element))).length === 0) {
+            $(element).remove();
           }
         }
       }
+    });
 
-      // Manage slash
+    // Manage slash
+    depth.each((_, element) => {
       if (
-        directionalSearch(extractNodes(prev), partialSlash, "reverse")
-          ?.metConds &&
-        chordValidator(splitChords(toText(extractNodes(current))).at(0))
+        directionalSearch(
+          extractNodes($(element).prev()),
+          partialSlash,
+          "reverse",
+        )?.metConds &&
+        chordValidator(splitChords(toText(extractNodes($(element)))).at(0))
       ) {
-        const validChordPos = directionalSearch(extractNodes(current), [
-          `${splitChords(toText(extractNodes(current))).at(0)}`,
+        const validChordPos = directionalSearch(extractNodes($(element)), [
+          `${splitChords(toText(extractNodes($(element)))).at(0)}`,
         ]);
         const slashPos = directionalSearch(
-          extractNodes(prev),
+          extractNodes($(element).prev()),
           partialSlash,
           "reverse",
         );
 
         validChordPos.chars.forEach((char) => {
           replaceNode(
-            current,
+            $(element),
             char.index,
             modifyString(
-              extractNodes(current)[char.index],
+              extractNodes($(element))[char.index],
               char.position,
               "\u2800",
               "replace",
@@ -421,65 +423,68 @@ export const parseHtmlFile = (doc, changeKey) => {
         });
 
         replaceNode(
-          prev,
+          $(element).prev(),
           validChordPos.chars.at(-1).index,
           modifyString(
-            extractNodes(prev)[validChordPos.chars.at(-1).index],
+            extractNodes($(element).prev())[validChordPos.chars.at(-1).index],
             slashPos.chars.at(-1).position,
             validChordPos.metConds,
             "insert",
           ),
         );
       }
+    });
 
-      // Format and transpose
-      const nodes = extractNodes(current);
-      const text = toText(nodes);
-      if (!chordValidator(text)) return;
+    // Format and transpose chords in one pass
+    depth.each((_, element) => {
+      const nodes = extractNodes($(element));
+      const nodesText = toText(nodes);
+      if (!chordValidator(nodesText)) return;
 
-      const cleanedChords = chordCleaner(nodes, splitChords(text));
-      cleanedChords.forEach((node, idx) => {
-        replaceNode(current, idx, node);
-      });
+      const split = splitChords(nodesText);
+      if (!split) return;
 
-      extractNodes(current).forEach((node, idx) => {
+      const cleanedChords = chordCleaner(nodes, split);
+
+      cleanedChords.forEach((chord, idx) => {
         try {
-          if (node && node.replace(/[\s\u2800]+/g, "") !== "") {
+          if (chord && chord.replace(/[\s\u2800]+/g, "") !== "") {
             replaceNode(
-              current,
+              $(element),
               idx,
-              transpose(node).up(changeKey).toString().replace(/b/g, "\u266D"),
+              transpose(chord).up(changeKey).toString().replace(/b/g, "\u266D"),
             );
           } else {
-            replaceNode(current, idx, node.replace(/b/g, "\u266D"));
+            replaceNode($(element), idx, (chord || "").replace(/b/g, "\u266D"));
           }
         } catch (err) {
-          console.error("Error transposing chord:", node);
+          console.error("Error transposing chord:", chord);
+          const safeChord = chord || "";
           let charsToUpdate = "";
-          for (let i = 0; i < node.length; i++) {
-            if (rootNaturals.includes(node[i])) {
-              if (sharpsFlats.includes(node[i + 1])) {
-                const transposedRoot = transpose(node.slice(i, i + 2))
+          for (let i = 0; i < safeChord.length; i++) {
+            if (rootNaturals.includes(safeChord[i])) {
+              if (sharpsFlats.includes(safeChord[i + 1])) {
+                const transposedRoot = transpose(safeChord.slice(i, i + 2))
                   .up(changeKey)
                   .toString();
                 charsToUpdate += transposedRoot;
               } else {
-                const transposedRoot = transpose(node[i])
+                const transposedRoot = transpose(safeChord[i])
                   .up(changeKey)
                   .toString();
                 charsToUpdate += transposedRoot;
               }
             } else {
-              charsToUpdate += node[i];
+              charsToUpdate += safeChord[i];
             }
           }
 
-          replaceNode(current, idx, charsToUpdate.replace(/b/g, "\u266D"));
+          replaceNode($(element), idx, charsToUpdate.replace(/b/g, "\u266D"));
           console.error("Attempt transposing chord:", charsToUpdate);
         }
       });
     });
-  }
 
-  return $.html();
+    return $.html();
+  }
 };
