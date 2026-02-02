@@ -351,19 +351,6 @@ const RoomView = () => {
     const el = scrollRef.current;
     if (!el || !socket || !roomName) return;
 
-    const followRestoreTimeoutRef = { current: null };
-
-    const scheduleFollowRestore = () => {
-      if (followRestoreTimeoutRef.current) {
-        clearTimeout(followRestoreTimeoutRef.current);
-      }
-      followRestoreTimeoutRef.current = setTimeout(() => {
-        setFollowScroll(true);
-        if (roomName) setBoolCookie(`roomFollow_${roomName}`, true);
-        applyScrollRatio(lastRemoteRatioRef.current || 0);
-      }, 200);
-    };
-
     const onScroll = () => {
       if (applyingRemoteScrollRef.current) return;
 
@@ -371,14 +358,11 @@ const RoomView = () => {
       if (followScroll) {
         setFollowScroll(false);
         if (roomName) setBoolCookie(`roomFollow_${roomName}`, false);
-        scheduleFollowRestore();
         return;
       }
 
-      scheduleFollowRestore();
-
       const now = Date.now();
-      if (now - lastSentRef.current < 20) return; // throttle ~100fps
+      if (now - lastSentRef.current < 10) return; // throttle ~100fps
       lastSentRef.current = now;
 
       const max = el.scrollHeight - el.clientHeight;
@@ -388,12 +372,7 @@ const RoomView = () => {
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      el.removeEventListener("scroll", onScroll);
-      if (followRestoreTimeoutRef.current) {
-        clearTimeout(followRestoreTimeoutRef.current);
-      }
-    };
+    return () => el.removeEventListener("scroll", onScroll);
   }, [socket, roomName, renderedHtml, followScroll]);
 
   useEffect(() => {
@@ -428,7 +407,7 @@ const RoomView = () => {
       const targetTop = max > 0 ? clamped * max : 0;
 
       // avoid micro-updates that cause jitter
-      if (Math.abs(el.scrollTop - targetTop) < 20) return;
+      if (Math.abs(el.scrollTop - targetTop) < 30) return;
 
       applyingRemoteScrollRef.current = true;
       el.scrollTop = targetTop;
