@@ -351,9 +351,31 @@ const RoomView = () => {
     const el = scrollRef.current;
     if (!el || !socket || !roomName) return;
 
+    const followRestoreTimeoutRef = { current: null };
+
+    const scheduleFollowRestore = () => {
+      if (followRestoreTimeoutRef.current) {
+        clearTimeout(followRestoreTimeoutRef.current);
+      }
+      followRestoreTimeoutRef.current = setTimeout(() => {
+        setFollowScroll(true);
+        if (roomName) setBoolCookie(`roomFollow_${roomName}`, true);
+        applyScrollRatio(lastRemoteRatioRef.current || 0);
+      }, 100);
+    };
+
     const onScroll = () => {
-      if (!followScroll) return;
       if (applyingRemoteScrollRef.current) return;
+
+      // Local user scrolled; disable follow mode and persist
+      if (followScroll) {
+        setFollowScroll(false);
+        if (roomName) setBoolCookie(`roomFollow_${roomName}`, false);
+        scheduleFollowRestore();
+        return;
+      }
+
+      scheduleFollowRestore();
 
       const now = Date.now();
       if (now - lastSentRef.current < 20) return; // throttle ~100fps
@@ -366,7 +388,12 @@ const RoomView = () => {
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      if (followRestoreTimeoutRef.current) {
+        clearTimeout(followRestoreTimeoutRef.current);
+      }
+    };
   }, [socket, roomName, renderedHtml, followScroll]);
 
   useEffect(() => {
