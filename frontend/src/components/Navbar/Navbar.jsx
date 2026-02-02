@@ -193,7 +193,12 @@ const Header = () => {
               }}
               /> */}
               <Typography sx={{ mr: 2 }}>{username}</Typography>
-              <Button variant="contained" color="error" onClick={handleSignOut}>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleSignOut}
+                sx={{ whiteSpace: "nowrap", px: 1 }}
+              >
                 Sign Out
               </Button>
             </Toolbar>

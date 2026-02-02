@@ -435,7 +435,7 @@ export const parseHtmlFile = (doc, changeKey) => {
       }
     });
 
-    // Format and transpose chords in one pass
+    // Format and transpose chords
     depth.each((_, element) => {
       const nodes = extractNodes($(element));
       const nodesText = toText(nodes);
@@ -484,7 +484,6 @@ export const parseHtmlFile = (doc, changeKey) => {
         }
       });
     });
-
-    return $.html();
   }
+  return $.html();
 };

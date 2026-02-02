@@ -67,7 +67,7 @@ const Index = () => {
           <Box
             sx={{
               my: "auto",
-              px: 2,
+              px: 1,
               pt: 3,
               pb: 3.5,
               display: "flex",
