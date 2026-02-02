@@ -361,7 +361,7 @@ const RoomView = () => {
         setFollowScroll(true);
         if (roomName) setBoolCookie(`roomFollow_${roomName}`, true);
         applyScrollRatio(lastRemoteRatioRef.current || 0);
-      }, 100);
+      }, 200);
     };
 
     const onScroll = () => {
