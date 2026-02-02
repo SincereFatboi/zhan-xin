@@ -28,6 +28,8 @@ const RoomView = () => {
   const applyingRemoteScrollRef = useRef(false);
   const lastRemoteRatioRef = useRef(0);
   const lastSentRef = useRef(0);
+  const localScrollingRef = useRef(false);
+  const localScrollTimeoutRef = useRef(null);
   const prevTransposeRef = useRef(null);
   const prevScoreIndexRef = useRef(0);
   const suppressTransposeNotifyRef = useRef(false);
@@ -355,6 +357,14 @@ const RoomView = () => {
       if (!followScroll) return;
       if (applyingRemoteScrollRef.current) return;
 
+      localScrollingRef.current = true;
+      if (localScrollTimeoutRef.current) {
+        clearTimeout(localScrollTimeoutRef.current);
+      }
+      localScrollTimeoutRef.current = setTimeout(() => {
+        localScrollingRef.current = false;
+      }, 200);
+
       const now = Date.now();
       if (now - lastSentRef.current < 25) return; // throttle ~40fps
       lastSentRef.current = now;
@@ -388,6 +398,8 @@ const RoomView = () => {
     const onRemoteScroll = (data) => {
       const ratio = Number(data?.ratio);
       if (!Number.isFinite(ratio)) return;
+
+      if (localScrollingRef.current) return;
 
       const clamped = Math.max(0, Math.min(1, ratio));
       lastRemoteRatioRef.current = clamped;
