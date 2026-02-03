@@ -165,11 +165,6 @@ const RoomView = () => {
     }
 
     if (prevTransposeRef.current !== transposeKey) {
-      if (!skippedFirstTransposeRef.current) {
-        skippedFirstTransposeRef.current = true;
-        prevTransposeRef.current = transposeKey;
-        return;
-      }
       const prev = prevTransposeRef.current;
       const dir = transposeKey > prev ? "UP KEY ⬆️" : "DOWN KEY ⬇️";
       notify("info", dir);
