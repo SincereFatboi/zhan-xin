@@ -19,9 +19,9 @@ export const schema = yup.object().shape({
   password: yup
     .string()
     .required("required*")
-    .min(8, "must be at least 8 characters*"),
-  // .matches(
-  //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).+$/,
-  //   "contains at least 1 uppercase, 1 lowercase, and 1 special character",
-  // ),
+    .min(8, "must be at least 8 characters*")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).+$/,
+      "contains at least 1 uppercase, 1 lowercase, and 1 special character",
+    ),
 });
