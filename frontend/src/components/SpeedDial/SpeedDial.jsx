@@ -42,7 +42,7 @@ const SpeedDial = ({
   const actions = [
     {
       icon: <RotateLeftIcon />,
-      name: "Reset Zoom",
+      name: "Reset",
       placement: "bottom",
       onClick: handleResetZoom,
     },
