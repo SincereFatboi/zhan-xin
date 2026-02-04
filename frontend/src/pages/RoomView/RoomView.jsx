@@ -165,11 +165,6 @@ const RoomView = () => {
     }
 
     if (prevTransposeRef.current !== transposeKey) {
-      if (!skippedFirstTransposeRef.current) {
-        skippedFirstTransposeRef.current = true;
-        prevTransposeRef.current = transposeKey;
-        return;
-      }
       const prev = prevTransposeRef.current;
       const dir = transposeKey > prev ? "UP KEY ⬆️" : "DOWN KEY ⬇️";
       notify("info", dir);
@@ -179,36 +174,55 @@ const RoomView = () => {
 
   const handleNextScore = () => {
     if (!socket || !allScores) return;
-    let nextIndex = 0;
-    setScoreIndex((prev) => {
-      const lastIndex = Object.keys(allScores).length - 1;
-      nextIndex = prev + 1 > lastIndex ? 0 : prev + 1;
-      allScores[Object.keys(allScores)[scoreIndex]] = transposeKey;
-      // Emit the new score index to the room
-      socket.emit("send-message", {
-        key: allScores[Object.keys(allScores)[nextIndex]],
-        scoreIndex: nextIndex,
-        allScores,
-        roomName,
-      });
-      return nextIndex;
+    const keys = Object.keys(allScores);
+    if (!keys.length) return;
+
+    const lastIndex = keys.length - 1;
+    const nextIndex = scoreIndex + 1 > lastIndex ? 0 : scoreIndex + 1;
+
+    const updatedScores = {
+      ...allScores,
+      [keys[scoreIndex]]: transposeKey,
+    };
+
+    const nextKey = Number(updatedScores[keys[nextIndex]]) || 0;
+
+    setAllScores(updatedScores);
+    setScoreIndex(nextIndex);
+    setTransposeKey(nextKey);
+
+    socket.emit("send-message", {
+      key: nextKey,
+      scoreIndex: nextIndex,
+      allScores: updatedScores,
+      roomName,
     });
   };
 
   const handlePrevScore = () => {
     if (!socket || !allScores) return;
-    let prevIndex = 0;
-    setScoreIndex((prev) => {
-      const lastIndex = Object.keys(allScores).length - 1;
-      prevIndex = prev - 1 < 0 ? lastIndex : prev - 1;
-      allScores[Object.keys(allScores)[scoreIndex]] = transposeKey;
-      socket.emit("send-message", {
-        key: allScores[Object.keys(allScores)[prevIndex]],
-        scoreIndex: prevIndex,
-        allScores,
-        roomName,
-      });
-      return prevIndex;
+    const keys = Object.keys(allScores);
+    if (!keys.length) return;
+
+    const lastIndex = keys.length - 1;
+    const prevIndex = scoreIndex - 1 < 0 ? lastIndex : scoreIndex - 1;
+
+    const updatedScores = {
+      ...allScores,
+      [keys[scoreIndex]]: transposeKey,
+    };
+
+    const prevKey = Number(updatedScores[keys[prevIndex]]) || 0;
+
+    setAllScores(updatedScores);
+    setScoreIndex(prevIndex);
+    setTransposeKey(prevKey);
+
+    socket.emit("send-message", {
+      key: prevKey,
+      scoreIndex: prevIndex,
+      allScores: updatedScores,
+      roomName,
     });
   };
 
