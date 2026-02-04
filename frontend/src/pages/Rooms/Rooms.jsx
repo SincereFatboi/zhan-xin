@@ -294,6 +294,7 @@ const RoomTable = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [currentRoomName, setCurrentRoomName] = useState("");
+  const [roomOrders, setRoomOrders] = useState({}); // track preferred score order per room
 
   const [rowScores, setRowScores] = useState(null);
   const [rowScoreOrder, setRowScoreOrder] = useState([]);
@@ -337,7 +338,11 @@ const RoomTable = () => {
 
   const handleMouseEnter = (event, row) => {
     setAnchorEl(event.currentTarget);
-    setCurrentRow(row.scores);
+    const orderedKeys =
+      roomOrders[row.roomName] || Object.keys(row.scores || {});
+    // keep only keys that still exist in scores
+    const filteredOrder = orderedKeys.filter((k) => k in (row.scores || {}));
+    setCurrentRow({ order: filteredOrder, scores: row.scores || {} });
     setPopperOpen(true);
   };
 
@@ -351,8 +356,10 @@ const RoomTable = () => {
     event.stopPropagation();
 
     const scoresObj = row.scores || {};
+    const presetOrder = roomOrders[row.roomName] || Object.keys(scoresObj);
+    const filteredOrder = presetOrder.filter((k) => k in scoresObj);
     setRowScores(scoresObj);
-    setRowScoreOrder(Object.keys(scoresObj));
+    setRowScoreOrder(filteredOrder);
     setCurrentRoomName(row.roomName);
     reset({ roomName: row.roomName });
     setOpenModal(true);
@@ -382,6 +389,14 @@ const RoomTable = () => {
         body: { roomName, scores: orderedScoresObj },
       }).unwrap();
       await getAllRooms.refetch();
+      setRoomOrders((prev) => {
+        const next = { ...prev };
+        if (currentRoomName && currentRoomName !== roomName) {
+          delete next[currentRoomName];
+        }
+        next[roomName] = [...rowScoreOrder];
+        return next;
+      });
       notify("success", "Room updated successfully");
       setOpenModal(false);
       setSelected([]);
@@ -598,9 +613,9 @@ const RoomTable = () => {
         />
       </Paper>
 
-      {currentRow && Object.keys(currentRow).length > 0 && (
+      {currentRow && (currentRow.order?.length || 0) > 0 && (
         <Popper open={popperOpen} anchorEl={anchorEl}>
-          {Object.keys(currentRow || {}).map((scoreKey, index) => (
+          {(currentRow.order || []).map((scoreKey, index) => (
             <Box key={scoreKey}>{`${index + 1}) ${scoreKey}`}</Box>
           ))}
         </Popper>
