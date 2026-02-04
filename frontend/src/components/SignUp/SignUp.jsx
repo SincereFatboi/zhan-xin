@@ -165,7 +165,7 @@ const SignUp = ({ handlesignInSignUp }) => {
           }}
         />
         <Button type="submit" variant="contained" color="secondary" fullWidth>
-          Sign In
+          Sign Up
         </Button>
       </Stack>
       <Link
